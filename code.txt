@@ -1,0 +1,44 @@
+#! /usr/bin/env bash -
+#set -x
+
+MY_INPUT='/root/temp/input'
+declare -a A_USERNAME
+declare -a A_PASSWORD
+declare -a A_SECONDARY
+
+while IFS=, read -r COL1 COL2 TRASH; do
+    A_USERNAME+=("$COL1")
+    A_PASSWORD+=("$COL2")
+    A_SECONDARY+=("$COL3")
+	
+done <"$MY_INPUT"
+
+for index in "${!A_USERNAME[@]}"; do
+    useradd -g "${A_DEPARTMENT[$index]}" -d "/home/${A_USERNAME[$index]}"
+    -s /bin/bash -p "$(echo "${A_PASSWORD[$index]}" | openssl passwd -1 
+    -stdin)" "${A_USERNAME[$index]}"
+done
+
+#!/bin/sh
+
+
+#Uploading file to remote server.
+USERNAME="user"
+PASSWORD="pass"
+SERVER="123.456.78.90"
+DATE="`date +%Y-%m-%d`"
+
+BACKUPDIR="/${DATE}/"
+find . -type f -name "*.tar.gz" -exec basename {} \; |
+  while read filename ; do 
+    ftp -inv $SERVER >> /tmp/My_ftp_backup.log <<EOF
+user $USERNAME $PASSWORD
+cd $BACKUPDIR
+binary
+put $filename
+EOF
+    echo -e "$date copied $filename\n" >> /tmp/My_ftp_backup.log
+done
+
+
+
