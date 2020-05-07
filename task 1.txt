@@ -1,0 +1,24 @@
+#!/bin/bash
+dpath="$1"
+
+#http://kate.ict.op.ac.nz/~faisalh/IN616osc/legends.txt
+
+if [ -z "$1" ]; then
+    echo "Please enter the file source path or link:"
+    read dpath
+
+    if [[ $dpath == "http"* ]]; then
+        wget $dpath
+        $dpath = "legends.txt"
+    fi
+fi
+
+#f1:f2:f3:f4:F5:F6:f7
+#user:encrypted password:uid,gid: name:groups: home directory:prefered shell
+while IFS=: read -r f1 f2 f3 f4 f5 f6 f7
+do 
+ echo "User $f1 use $f7 shell and stores files in $f6 directory."
+done < $dpath
+
+
+
