@@ -13,11 +13,26 @@ if [ -z "$1" ]; then
     fi
 fi
 
-#f1:f2:f3:f4:F5:F6:f7
 #user:encrypted password:uid,gid: name:groups: home directory:prefered shell
-while IFS=: read -r f1 f2 f3 f4 f5 f6 f7
+while IFS=: read -r username password uid gid name groups directory preferedshell
 do 
- echo "User $f1 use $f7 shell and stores files in $f6 directory."
+
+#check if user exists
+ if id -u user >/dev/null 2>&1; then
+    echo -r "$username already exists ... \n Skipping user."
+ else
+
+    for i in $(echo $groups | tr "," "\n")
+    do
+        if [ $(getent group $i) -eq 0]; then
+            groupadd $i
+        fi
+    done
+
+    echo -r "Adding user $username ..."
+    useradd -g "$groups" -d "$directory" -s "$preferedshell" -c $name -p "$(echo "$password" | openssl passwd -1 -stdin)" $username
+    passwd -e $username # forces user to change password in next login
+ fi
 done < $dpath
 
 
